@@ -101,7 +101,7 @@ $(document).ready(function() {
     $.ajax({
       method: "PUT",
       url: "/articles/" + articleToSave._id,
-      data: articleToSave
+      params: articleToSave
     }).then(function(data) {
       // If the data was saved successfully
       if (data.saved) {
