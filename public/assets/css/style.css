@@ -167,3 +167,7 @@ textarea {
   position: relative;
   bottom: 10px;
 }
+.modal-body {
+  max-height: 300px;
+  overflow: scroll;
+}

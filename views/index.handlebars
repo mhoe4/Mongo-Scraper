@@ -5,7 +5,7 @@
     <span class="navbar-toggler-icon"></span>
   </button>
 
-  <div class="collapse navbar-collapse" id="navbarColor01">
+  {{!-- <div class="collapse navbar-collapse" id="navbarColor01">
     <ul class="navbar-nav mr-auto">
       <li class="nav-item active">
         <a class="nav-link" href="/">Home
@@ -22,20 +22,77 @@
         <a class="btn btn-danger clear">CLEAR ARTICLES!</a>
       </li>
     </ul>
-  </div>
+  </div> --}}
 </nav>
 
 <div class="jumbotron text-center">
-  <div class="overlay">
-  </div>
-  <div class="background-image">
-  </div>
+  <div class="overlay"></div>
+  <div class="background-image"></div>
   <div class="caption">
     <h1>Mongo Scraper</h1>
     <p>Echo JS Edition</p>
   </div>
 </div>
-<div class="container-fluid article-container">
+
+<section class="container-fluid article-container">
+    <div class="content-header text-center">
+        <h1>Scraped Articles</h1>
+    </div>
+    <div class="container">
+        <div class="content-body">
+            {{#each articles}}
+            <div class='card'>
+              <div class='card-header'>
+                <h3>
+                  <a href="{{url}}" class='article-link' target='_blank' rel='noopener noreferrer'>
+                    {{headline}}
+                  </a>
+                  <p class='btn btn-success article-comment' data-toggle="modal" data-target="#commentModal" data-id="{{_id}}">comments</p>
+                  {{!-- <a class='btn btn-success comment'>Comments</a> --}}
+                </h3>
+              </div>
+              <div class='card-body'>
+                {{summary}}
+              </div>
+            </div>
+            {{!-- <div class="article">
+                <a href="{{url}}" target="_blank">
+                    <h5 class="article-headline">{{headline}}</h2>
+                </a>
+                <p class="article-summary">{{summary}}</p>
+                <p class="article-comments" data-toggle="modal" data-target="#commentModal" data-id="{{_id}}">
+                  <span id="commentNum">{{comments}}</span> 
+                  comments</p>
+            </div> --}}
+            {{/each}}
+        </div>
+    </div>
+</section>
+
+
+<div class="modal fade" id="commentModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal-title">Comments:</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <form>
+                    <textarea id="form_message" name="message" placeholder="Message" rows="3"></textarea>
+                    <input id="form_submit" type="submit" value="Submit">
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{!-- <div class="container-fluid article-container">
 
   <div class="alert alert-warning text-center">
     <h4>Uh Oh. Looks like we don't have any new articles.</h4>
@@ -53,7 +110,7 @@
       </h4>
     </div>
   </div>
-</div>
+</div> --}}
 
 <footer class="footer">
   <div class="container">
@@ -61,7 +118,3 @@
   </div>
 </footer>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/4.4.0/bootbox.min.js"></script>
-<script src="/assets/js/index.js"></script>
