@@ -1,37 +1,45 @@
-/* global bootbox */
+
 $(document).ready(function () {
   // Setting a reference to the article-container div where all the dynamic content will go
   // Adding event listeners to any dynamically generated "save article"
   // and "scrape new article" buttons
-  var articleContainer = $(".article-container");
+  var commentContainer = $(".modal-body");
   $(document).on("click", ".article-comments", handleArticleComments);
   $(document).on("click", "#form_submit", handleFormSubmit);
   let articleId;
 
   function handleArticleComments() {
     articleId = $(this).attr("data-id");
+
+    $.get("/article/", { id: articleId }).then(function (data) {
+      commentContainer.empty();
+      let length = data.articles[0].comments.length;
+      let comments = data.articles[0].comments;
+      // If we have comments, render them to the page
+      if (data && length) {
+        for (let i = 0; i < length; i++) {
+
+          $.get("/comment/", { id: comments[0] }).then(function (myResponse) {
+            let commentsHTML = "<div>" + myResponse[0].body + "</div>";
+            commentContainer.append(commentsHTML);
+          });
+        }
+
+
+      } else {
+        // Otherwise render a message explaining we have no articles
+        commentContainer.empty();
+      }
+    });
+
   }
 
   function handleFormSubmit() {
-
     let body = $("#form_message").val();
-    // Run a POST request to change the note, using what's entered in the inputs
-    $.ajax({
-      method: "POST",
-      url: "/api/comment/" + articleId,
-      data: {
-        // Value taken from note textarea
-        body: body
-      }
-    })
-      // With that done
-      .then(function (data) {
-        // Log the response
-        console.log(data);
-      });
+    $.post("/api/comment/" + articleId, { data: body }).then(function (data) {
+      console.log(data);
+    });
 
-    // Also, remove the values entered in the input and textarea for note entry
-    // $("#form_message").val("");
   }
 
   // function initPage() {

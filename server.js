@@ -85,16 +85,40 @@ app.get("/", function (req, res) {
       res.render("index", object);
     });
 });
+
+app.get("/article/", function (req, res) {
+  let id = "5cb224a08027c3ba379e9e56";
+  console.log(id);
+  db.Article.where({ _id: id}).find({})
+    .then((response) => {
+      console.log(response);
+      let object = {
+        articles: response
+      };
+      res.json(object);
+    });
+});
+
+app.get("/comment/", function (req, res) {
+  let id = "5cb223c4f7e868ac335deca8";
+  console.log(id);
+  db.Comment.where({ _id: id}).find({})
+    .then((response) => {
+      console.log(response);
+      
+      res.json(response);
+    });
+});
+
 // Route for saving/updating an Article's associated Note
 app.post("/api/comment/:id", function (req, res) {
   console.log("====================================================================================");
-  console.log(req.params.id);
+  console.log(req.body);
   console.log("====================================================================================");
 
-  console.log(req.body.body);
   // Create a new note and pass the req.body to the entry
-  db.Comment.create({body: req.body.body})
-    .then(function (dbComment) {  
+  db.Comment.create({ body: req.body })
+    .then(function (dbComment) {
       console.log("====================================================================================");
 
       console.log(dbComment);
@@ -103,7 +127,7 @@ app.post("/api/comment/:id", function (req, res) {
       // If a Note was created successfully, find one Article with an `_id` equal to `req.params.id`. Update the Article to be associated with the new Note
       // { new: true } tells the query that we want it to return the updated User -- it returns the original by default
       // Since our mongoose query returns a promise, we can chain another `.then` which receives the result of the query
-      return db.Article.findOneAndUpdate({ _id: req.params.id}, { $push: { comments: dbComment._id } }, { new: true });
+      return db.Article.findOneAndUpdate({ _id: req.params.id }, { $push: { comments: dbComment._id } }, { new: true });
     })
     .then(function (dbComment) {
       // If we were able to successfully update an Article, send it back to the client
@@ -114,6 +138,7 @@ app.post("/api/comment/:id", function (req, res) {
       res.json(err);
     });
 });
+
 
 // //API Route to Post a comment
 // app.post("/api/comment/:id", function(req, res) {
