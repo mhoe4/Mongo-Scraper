@@ -77,14 +77,70 @@ axios.get(scrapeSiteUrl).then(function (response) {
 
 // Routes --------------------------------------------
 app.get("/", function (req, res) {
-    db.Article.find({}).sort({ headline: 1 })
-        .then((response) => {
-            let object = {
-                articles: response
-            };
-            res.render("index", object);
-        });
+  db.Article.find({}).sort({ headline: 1 })
+    .then((response) => {
+      let object = {
+        articles: response
+      };
+      res.render("index", object);
+    });
 });
+// Route for saving/updating an Article's associated Note
+app.post("/api/comment/:id", function (req, res) {
+  console.log("====================================================================================");
+  console.log(req.params.id);
+  console.log("====================================================================================");
+
+  console.log(req.body.body);
+  // Create a new note and pass the req.body to the entry
+  db.Comment.create({body: req.body.body})
+    .then(function (dbComment) {  
+      console.log("====================================================================================");
+
+      console.log(dbComment);
+      console.log("====================================================================================");
+
+      // If a Note was created successfully, find one Article with an `_id` equal to `req.params.id`. Update the Article to be associated with the new Note
+      // { new: true } tells the query that we want it to return the updated User -- it returns the original by default
+      // Since our mongoose query returns a promise, we can chain another `.then` which receives the result of the query
+      return db.Article.findOneAndUpdate({ _id: req.params.id}, { $push: { comments: dbComment._id } }, { new: true });
+    })
+    .then(function (dbComment) {
+      // If we were able to successfully update an Article, send it back to the client
+      res.json(dbComment);
+    })
+    .catch(function (err) {
+      // If an error occurred, send it to the client
+      res.json(err);
+    });
+});
+
+// //API Route to Post a comment
+// app.post("/api/comment/:id", function(req, res) {
+//   db.Comment.create({ body: req.params.body })
+//     .then(function(dbComment) {
+//       console.log(dbComment);
+//       let data = db.Comment.findOneAndUpdate({ _id: req.params.id}, { $push: { comments: dbComment._id } }, { new: true });
+//       console.log(data);
+//       return data;
+//     })
+//     .then(function(dbComment) {
+//       // If the User was updated successfully, send it back to the client
+//       res.json(dbComment);
+//       //res.render("index", {});
+//     })
+//     .catch(function(err) {
+//       // If an error occurs, send it back to the client
+//       res.json(err);
+//     });
+// });
+
+// app.post("/api/del", function(req, res) {
+//   db.Comments.findByIdAndDelete(req.body.cid, (err, todo) => {
+//     if (err) return res.status(500).send(err);
+//   });
+//   res.render("comment", {});
+// });
 
 
 // A GET route for scraping the echoJS website
@@ -176,19 +232,19 @@ app.get("/", function (req, res) {
 //     reject(err);
 //   });
 
-  // Using the id passed in the id parameter, prepare a query that finds the matching one in our db...
-  // db.Article.findOneAndUpdate({ _id: req.params.id })
+// Using the id passed in the id parameter, prepare a query that finds the matching one in our db...
+// db.Article.findOneAndUpdate({ _id: req.params.id })
 
-  //   .update({ saved: true })
-  //   .then(function (dbArticle) {
-  //     // If we were able to successfully find an Article with the given id, send it back to the client
-  //     console.log(dbA)
-  //     res.json(dbArticle);
-  //   })
-  //   .catch(function (err) {
-  //     // If an error occurred, send it to the client
-  //     res.json(err);
-  //   });
+//   .update({ saved: true })
+//   .then(function (dbArticle) {
+//     // If we were able to successfully find an Article with the given id, send it back to the client
+//     console.log(dbA)
+//     res.json(dbArticle);
+//   })
+//   .catch(function (err) {
+//     // If an error occurred, send it to the client
+//     res.json(err);
+//   });
 // });
 
 // Route for saving/updating an Article's associated Comment
